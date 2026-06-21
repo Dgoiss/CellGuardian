@@ -19,6 +19,10 @@ public class EnemySpawner : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance != null && GameManager.instance.isBossPhase)
+        {
+            return; 
+        }
         // Se o jogo estiver pausado no Dice Drafting, não conta tempo
         if (GameManager.instance != null && GameManager.instance.isDrafting) return;
 

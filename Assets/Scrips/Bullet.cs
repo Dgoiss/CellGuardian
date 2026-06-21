@@ -2,34 +2,106 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float lifeTime = 3f; // Tempo para o tiro sumir se não acertar nada
+    public float lifeTime = 3f; 
+    public float speed = 20f;   
+    
+    [HideInInspector] public int damage = 1;       
+    [HideInInspector] public int penetrationRemaining = 0; 
+    [HideInInspector] public float raioDaExplosao = 0f; // Definido pelo PlayerController
+
+    private Rigidbody rb;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         Destroy(gameObject, lifeTime);
     }
 
-    void OnCollisionEnter(Collision collision)
+    void FixedUpdate()
     {
-        // 1. Se acertar o inimigo, dá dano
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (rb != null)
         {
-            EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-            if (enemy != null)
+            Vector3 proximaPosicao = transform.position + transform.forward * speed * Time.fixedDeltaTime;
+            rb.MovePosition(proximaPosicao);
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+       if (other.CompareTag("Enemy"))
+        {
+            // Se o jogador já liberou o upgrade (raio maior que zero), causa a explosão em área!
+            if (raioDaExplosao > 0f)
             {
-                enemy.TakeDamage(1);
+                ExecutarDanoEmArea(other.transform.position);
             }
-            Destroy(gameObject); 
+            else
+            {
+                // Se não for em área, tenta dar dano no inimigo comum
+                EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                }
+                else
+                {
+                    // NOVO: Se não for um inimigo comum, verifica se é o Chefão!
+                    BossHealth boss = other.GetComponent<BossHealth>();
+                    if (boss != null) boss.TakeDamage(damage);
+                }
+            }
+
+            // Lógica de penetração acumulável (Dado 5)
+            if (penetrationRemaining > 0)
+            {
+                penetrationRemaining--;
+            }
+            else
+            {
+                Destroy(gameObject); 
+            }
         }
-        // 2. SE COLIDIR COM O PLAYER OU COM O DRONE, NÃO FAZ NADA! (Ignora)
-        else if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Drone"))
+    }
+
+    public AudioClip somExplosaoArea;
+
+    void ExecutarDanoEmArea(Vector3 pontoImpacto)
+    {
+        AudioSource.PlayClipAtPoint(somExplosaoArea, pontoImpacto);
+
+        Collider[] objetosAtingidos = Physics.OverlapSphere(pontoImpacto, raioDaExplosao);
+
+        foreach (Collider col in objetosAtingidos)
         {
-            return; // Sai da função sem destruir a bala
+            if (col.CompareTag("Enemy"))
+            {
+                EnemyHealth inimigoNoRaio = col.GetComponent<EnemyHealth>();
+                if (inimigoNoRaio != null)
+                {
+                    inimigoNoRaio.TakeDamage(damage);
+                    Debug.Log($"Dano em área atingiu: {col.name} causando {damage} de dano.");
+                }
+                else
+                {
+                    // NOVO: Verifica se o Chefão estava no raio da explosão do dano em área!
+                    BossHealth bossNoRaio = col.GetComponent<BossHealth>();
+                    if (bossNoRaio != null)
+                    {
+                        bossNoRaio.TakeDamage(damage);
+                        Debug.Log($"Dano em área atingiu o Chefão causando {damage} de dano!");
+                    }
+                }
+            }
         }
-        // 3. Destrói o tiro se bater em paredes/obstáculos, mas ignora o chão
-        else if (collision.gameObject.CompareTag("Chao") == false)
+    }
+
+    // Desenha o círculo do dano em área no modo de edição da Unity para testes visuais
+    void OnDrawGizmosSelected()
+    {
+        if (raioDaExplosao > 0f)
         {
-            Destroy(gameObject);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, raioDaExplosao);
         }
     }
 }

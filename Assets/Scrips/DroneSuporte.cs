@@ -63,6 +63,9 @@ public class DroneSuporte : MonoBehaviour
 
     void AtirarNoInimigoProximo()
     {
+        // CORREÇÃO CRUCIAL: Reseta o cronômetro IMEDIATAMENTE para o drone esperar o 'fireRate' antes de atirar de novo
+        nextFireTime = Time.time + fireRate;
+
         GameObject[] inimigos = GameObject.FindGameObjectsWithTag("Enemy");
         if (inimigos.Length == 0) return;
 
@@ -86,13 +89,28 @@ public class DroneSuporte : MonoBehaviour
             Vector3 posicaoTiro = transform.position + transform.forward * 0.6f;
             GameObject bullet = Instantiate(bulletPrefab, posicaoTiro, transform.rotation);
             
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-            if (rb != null)
+            Bullet bulletScript = bullet.GetComponent<Bullet>();
+            if (bulletScript != null)
             {
-                rb.AddForce(transform.forward * bulletForce, ForceMode.Impulse);
+                bulletScript.damage = 1; 
+                
+                // NOVO: O drone busca a velocidade atual direto do PlayerController ativo na cena
+                PlayerController player = FindObjectOfType<PlayerController>();
+                if (player != null)
+                {
+                    bulletScript.speed = player.bulletForce; 
+                }
+                else
+                {
+                    bulletScript.speed = this.bulletForce; // Valor padrão caso não ache
+                }
             }
-            
-            nextFireTime = Time.time + fireRate;
+
+            // Toca o som de tiro do drone
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.PlaySomTiro();
+            }
         }
     }
 }

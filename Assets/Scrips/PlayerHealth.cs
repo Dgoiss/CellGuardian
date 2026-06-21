@@ -1,17 +1,36 @@
 using UnityEngine;
+using UnityEngine.UI; // IMPORTANTE: Dá acesso ao componente Slider (Barra de Vida)
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHitsBeforeSplit = 3;
-    private int currentHits = 0;
+    [Header("LÓGICA ORIGINAL RESTAURADA")]
+    public int maxHitsBeforeSplit = 3;  // Quantos hits aguenta antes da mitose
+    public int currentHits = 0;        // Quantos hits já tomou
+    public int totalLives = 3;          // Total de vidas/chances mecânicas
     
-    public int totalLives = 3; 
     public GameObject cancerCellPrefab; 
+
+    [Header("INTERFACE VISUAL (BARRA DE VIDA)")]
+    [Tooltip("Arraste o Slider da sua UI aqui no Inspector")]
+    public Slider barraVidaSlider;
+
+    void Start()
+    {
+        currentHits = 0;
+        AtualizarInterfaceBarra();
+    }
 
     public void TakeDamage()
     {
         currentHits++;
         Debug.Log($"O Player tomou um hit! ({currentHits}/{maxHitsBeforeSplit})");
+
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.PlaySomDanoPlayer(GameManager.instance.somDanoPlayer);
+        }
+
+        AtualizarInterfaceBarra();
 
         if (currentHits >= maxHitsBeforeSplit)
         {
@@ -22,16 +41,17 @@ public class PlayerHealth : MonoBehaviour
     void SplitCell()
     {
         totalLives--;
-        currentHits = 0;
+        currentHits = 0; // Reseta os hits para a nova vida
+
+        AtualizarInterfaceBarra();
 
         if (cancerCellPrefab != null)
         {
-            // LEAVE SOMETHING BEHIND: Instancia o inimigo exatamente onde o player estava
             Instantiate(cancerCellPrefab, transform.position, Quaternion.identity);
             Debug.Log("A célula boa sofreu mitose induzida! Um inimigo foi deixado para trás.");
         }
 
-        // CHAMA O DICE DRAFTING: Dá um upgrade para o jogador tentar reagir à dificuldade
+        // Abre o menu de dados (Dice Draft)
         if (GameManager.instance != null)
         {
             GameManager.instance.TriggerDiceDraft();
@@ -46,39 +66,40 @@ public class PlayerHealth : MonoBehaviour
     void GameOver()
     {
         Debug.Log("Game Over! O câncer venceu.");
-        
-        // 1. Toca o som de morte do jogador se o GameManager existir
         if (GameManager.instance != null) 
         {
             GameManager.instance.PlaySomMortePlayer();
-            
-            // 2. ATIVA A TELA DE GAME OVER E TRAVA O JOGO
             GameManager.instance.IniciarGameOver();
         }
-
-        // 3. Destrói o objeto do player
         Destroy(gameObject);
+    }
+
+    // FUNÇÃO QUE ATUALIZA A BARRA DE VIDA VISUALMENTE
+    // FUNÇÃO QUE ATUALIZA A BARRA DE VIDA VISUALMENTE
+    public void AtualizarInterfaceBarra()
+    {
+        if (barraVidaSlider != null)
+        {
+            //Garante que o limite máximo do Slider mude em tempo real com o Upgrade!
+            barraVidaSlider.maxValue = maxHitsBeforeSplit;
+            
+            // A barra começa cheia e vai esvaziando conforme toma hits
+            barraVidaSlider.value = maxHitsBeforeSplit - currentHits;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Verifica se o objeto que encostou no Player tem a tag "Enemy"
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // 1. O Player toma o hit normalmente (Logica original)
+            // O Player toma o dano da colisão
             TakeDamage();
 
-            // 2. RETALIAÇÃO: Faz o inimigo que encostou também tomar dano
+            // RETALIAÇÃO DIRETA: Destrói o inimigo que encostou na hora
             EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
-                // Aqui você define quanto de dano o inimigo toma ao encostar no Player.
-                // Como os cubos pretos têm 3 de vida por padrão (no EnemyHealth.cs), 
-                // dar 1 de dano fará com que eles precisem encostar 3 vezes para morrer,
-                // ou você pode colocar 'enemyHealth.health' para explodir eles direto!
                 enemyHealth.TakeDamage(enemyHealth.health);
-                
-                Debug.Log("A célula cancerígena sofreu retaliação por contato!");
             }
         }
     }

@@ -14,7 +14,10 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
 
     [Header("UPGRADES ATIVOS")]
-    public float fireCooldown = 0.5f; // Tempo mínimo entre um tiro e outro
+    public float fireCooldown = 0.5f; 
+    public int bulletDamage = 1;      
+    [HideInInspector] public int maxPenetrationCount = 0;
+    [HideInInspector] public float currentExplosionRadius = 0f;
     private float nextFireTime = 0f;
 
     [Tooltip("Arraste um objeto vazio posicionado acima do player para os drones orbitarem")]
@@ -100,13 +103,19 @@ public class PlayerController : MonoBehaviour
         if (firePoint == null || bulletPrefab == null) return;
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        Rigidbody rb = bullet.GetComponent<Rigidbody>();
-        if (rb != null)
+        
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        if (bulletScript != null)
         {
-            rb.AddForce(firePoint.forward * bulletForce, ForceMode.Impulse);
+            bulletScript.damage = bulletDamage;
+            bulletScript.penetrationRemaining = maxPenetrationCount; 
+            
+            // GARANTIA: Envia a velocidade atualizada pelo upgrade para a bala
+            bulletScript.speed = bulletForce; 
+            
+            bulletScript.raioDaExplosao = currentExplosionRadius; 
         }
 
-        // ADICIONE ESTA LINHA AQUI:
         if (GameManager.instance != null) GameManager.instance.PlaySomTiro();
     }
 }
