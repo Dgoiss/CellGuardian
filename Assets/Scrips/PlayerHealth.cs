@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // IMPORTANTE: Dá acesso ao componente Slider (Barra de Vida)
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -51,7 +51,7 @@ public class PlayerHealth : MonoBehaviour
             Debug.Log("A célula boa sofreu mitose induzida! Um inimigo foi deixado para trás.");
         }
 
-        // Abre o menu de dados (Dice Draft)
+        // Abre o menu de dados
         if (GameManager.instance != null)
         {
             GameManager.instance.TriggerDiceDraft();
@@ -74,8 +74,6 @@ public class PlayerHealth : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // FUNÇÃO QUE ATUALIZA A BARRA DE VIDA VISUALMENTE
-    // FUNÇÃO QUE ATUALIZA A BARRA DE VIDA VISUALMENTE
     public void AtualizarInterfaceBarra()
     {
         if (barraVidaSlider != null)
@@ -95,7 +93,7 @@ public class PlayerHealth : MonoBehaviour
             // O Player toma o dano da colisão
             TakeDamage();
 
-            // RETALIAÇÃO DIRETA: Destrói o inimigo que encostou na hora
+            //Destrói o inimigo que encostou na hora
             EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {

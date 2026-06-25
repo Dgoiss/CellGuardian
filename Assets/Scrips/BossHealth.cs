@@ -31,7 +31,7 @@ public class BossHealth : MonoBehaviour
 
     void Update()
     {
-        // COMPORTAMENTO DE IA: Persegue o jogador constantemente se o jogo não estiver pausado
+        //Persegue o jogador constantemente se o jogo não estiver pausado
         if (playerTarget != null && agent != null)
         {
             // Se o GameManager estiver na tela de escolha de dados, congela o chefe

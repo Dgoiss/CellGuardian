@@ -83,7 +83,7 @@ public class Bullet : MonoBehaviour
                 }
                 else
                 {
-                    // NOVO: Verifica se o Chefão estava no raio da explosão do dano em área!
+                    
                     BossHealth bossNoRaio = col.GetComponent<BossHealth>();
                     if (bossNoRaio != null)
                     {

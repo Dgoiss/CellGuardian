@@ -30,13 +30,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // POINT AND CLICK: Botão direito define o destino
+        // Botão direito define o destino
         if (Input.GetMouseButtonDown(1)) 
         {
             SetTargetPosition();
         }
 
-        // SHOOTING: Botão esquerdo atira
+        //Botão esquerdo atira
         if (Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
         {
             Shoot();
@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
             bulletScript.damage = bulletDamage;
             bulletScript.penetrationRemaining = maxPenetrationCount; 
             
-            // GARANTIA: Envia a velocidade atualizada pelo upgrade para a bala
+            //Envia a velocidade atualizada pelo upgrade para a bala
             bulletScript.speed = bulletForce; 
             
             bulletScript.raioDaExplosao = currentExplosionRadius; 

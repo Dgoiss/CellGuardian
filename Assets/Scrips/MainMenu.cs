@@ -9,7 +9,7 @@ public class MainMenu : MonoBehaviour
 
     public void IniciarJogo()
     {
-        // Certifica-se de que o tempo do jogo está normalizado (caso tenha vindo de um Game Over anterior)
+        // Certifica-se de que o tempo do jogo está normalizado
         Time.timeScale = 1f; 
         
         // Carrega a cena do gameplay

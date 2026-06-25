@@ -16,7 +16,7 @@ public class DroneSuporte : MonoBehaviour
         orbitTarget = target;
         bulletPrefab = bullet;
         
-        // 1. GARANTIA ANTI-BUG: Desativa a física bruta para ele não travar no chão
+        //Desativa a física bruta para ele não travar no chão
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -24,7 +24,7 @@ public class DroneSuporte : MonoBehaviour
             rb.useGravity = false;  // Desativa totalmente a gravidade
         }
 
-        // 2. GARANTIA ANTI-COLISÃO: Faz o colisor virar Trigger (fantasma)
+        //Faz o colisor virar Trigger (fantasma)
         Collider col = GetComponent<Collider>();
         if (col != null)
         {
@@ -38,7 +38,7 @@ public class DroneSuporte : MonoBehaviour
         float angle = Random.Range(0f, Mathf.PI * 2f);
         Vector3 posicaoRelativa = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * orbitRadius;
         
-        // 5. Zera a posição local: O Y em 0f força ele a ficar EXATAMENTE na altura do droneOrbitPoint
+        // 5. Zera a posição local
         transform.localPosition = new Vector3(posicaoRelativa.x, 0f, posicaoRelativa.z);
         
         // Zera rotações herdadas esquisitas
@@ -63,7 +63,7 @@ public class DroneSuporte : MonoBehaviour
 
     void AtirarNoInimigoProximo()
     {
-        // CORREÇÃO CRUCIAL: Reseta o cronômetro IMEDIATAMENTE para o drone esperar o 'fireRate' antes de atirar de novo
+        
         nextFireTime = Time.time + fireRate;
 
         GameObject[] inimigos = GameObject.FindGameObjectsWithTag("Enemy");
@@ -94,7 +94,7 @@ public class DroneSuporte : MonoBehaviour
             {
                 bulletScript.damage = 1; 
                 
-                // NOVO: O drone busca a velocidade atual direto do PlayerController ativo na cena
+               
                 PlayerController player = FindObjectOfType<PlayerController>();
                 if (player != null)
                 {

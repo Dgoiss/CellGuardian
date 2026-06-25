@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.AI; // IMPORTANTE: Dá acesso ao motor de inteligência artificial da Unity
+using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {

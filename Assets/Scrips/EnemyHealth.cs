@@ -20,7 +20,7 @@ public class EnemyHealth : MonoBehaviour
         if (GameManager.instance != null)
         {
             GameManager.instance.GainXP(xpReward);
-            // ADICIONE ESTA LINHA AQUI:
+            
             GameManager.instance.PlaySomMorteInimigo(); 
         }
 

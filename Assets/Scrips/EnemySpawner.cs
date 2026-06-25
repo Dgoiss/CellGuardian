@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab; // Arraste seu prefab da CelulaCancerigena aqui
+    public GameObject enemyPrefab;
     public float initialSpawnDelay = 3f; // Tempo inicial entre os inimigos
     public float minimumSpawnDelay = 0.5f; // O limite máximo de velocidade de spawn
     public float difficultyIncreaseRate = 0.05f; // Quanto diminui o tempo a cada segundo

@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     public bool isGameOver = false; // Controla se a partida acabou
 
     [Header("SISTEMA DO CHEFÃO")]
-    public GameObject bossPrefab;       // Arraste o Prefab do Chefão aqui no Inspector
+    public GameObject bossPrefab;
     public bool isBossPhase = false;    // Controla se já estamos na fase do chefe
     public bool isVictory = false;      // Controla se o jogador venceu o jogo
 
@@ -58,7 +58,6 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        // Tecla de teste caso queira forçar a abertura do menu
         if (Input.GetKeyDown(KeyCode.G) && !isDrafting)
         {
             TriggerDiceDraft();
@@ -296,9 +295,7 @@ public void TriggerDiceDraft()
                 }
             }
         }
-        // =============================================================
-        // 3. HUD PADRÃO DE JOGO (SÓ APARECE SE NÃO ESTIVER EM DRAFT / MORTO)
-        // =============================================================
+        
         else
         {
             float hudWidth = Screen.width * 0.2f; 
@@ -428,7 +425,7 @@ public void TriggerDiceDraft()
     {
         isGameOver = true;
         Time.timeScale = 0f;          // Congela o tempo e para o jogo instantaneamente!
-        AudioListener.pause = true;   // (Opcional) Pausa todos os sons do ambiente
+        AudioListener.pause = true;
     }
 
     void IniciarFaseChefe()
@@ -457,7 +454,6 @@ public void TriggerDiceDraft()
         // Posição padrão caso o script não encontre o jogador na cena
         Vector3 posicaoSpawnChefe = new Vector3(0, 1, 0); 
 
-        // SOLUÇÃO: Busca o PlayerController ativo na cena de forma dinâmica
         PlayerController jogadorAtivo = FindAnyObjectByType<PlayerController>();
 
         if (jogadorAtivo != null)
