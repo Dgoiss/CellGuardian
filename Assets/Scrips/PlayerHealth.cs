@@ -47,11 +47,30 @@ public class PlayerHealth : MonoBehaviour
 
         if (cancerCellPrefab != null)
         {
-            Instantiate(cancerCellPrefab, transform.position, Quaternion.identity);
-            Debug.Log("A célula boa sofreu mitose induzida! Um inimigo foi deixado para trás.");
+            // Sorteia um ângulo aleatório ao redor do jogador
+            float anguloAleatorio = Random.Range(0f, Mathf.PI * 2f);
+            
+            // Define uma distância segura (ex: 12 metros, que joga a célula para um canto da tela)
+            float distanciaSegura = 12f; 
+
+            // Calcula a posição de spawn afastada do jogador
+            Vector3 posicaoSpawnInimigo = new Vector3(
+                transform.position.x + Mathf.Cos(anguloAleatorio) * distanciaSegura,
+                1f, // Altura padrão do chão para não enterrar na malha
+                transform.position.z + Mathf.Sin(anguloAleatorio) * distanciaSegura
+                );
+
+            // Instancia a nova ameaça cancerígena longe do jogador
+            Instantiate(cancerCellPrefab, posicaoSpawnInimigo, Quaternion.identity);
+            
+            Debug.Log("SPLIT CELL: O acúmulo de danos causou uma mitose! Uma nova célula inimiga surgiu nos limites da tela!");
+        }
+        else
+        {
+            Debug.LogWarning("PlayerHealth: Nenhum prefab de célula cancerígena foi arrastado para o campo 'Cancer Cell Prefab'!");
         }
 
-        // Abre o menu de dados
+        // Abre o menu de dados (Upgrade)
         if (GameManager.instance != null)
         {
             GameManager.instance.TriggerDiceDraft();

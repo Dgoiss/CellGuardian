@@ -26,39 +26,38 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-       if (other.CompareTag("Enemy"))
+        // Se bater em uma parede ou limite do cenário, destrói a bala imediatamente
+        if (other.CompareTag("Parede") || other.CompareTag("Obstaculo"))
         {
-            // Se o jogador já liberou o upgrade (raio maior que zero), causa a explosão em área!
-            if (raioDaExplosao > 0f)
+            Destroy(gameObject);
+            return;
+        }
+
+        // Se bater em um inimigo (comum ou chefe)
+        if (other.CompareTag("Enemy"))
+        {
+            // 1. Aplica o dano direto
+            EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+            if (enemy != null)
             {
-                ExecutarDanoEmArea(other.transform.position);
+                enemy.TakeDamage(damage);
             }
             else
             {
-                // Se não for em área, tenta dar dano no inimigo comum
-                EnemyHealth enemy = other.GetComponent<EnemyHealth>();
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(damage);
-                }
-                else
-                {
-                    // NOVO: Se não for um inimigo comum, verifica se é o Chefão!
-                    BossHealth boss = other.GetComponent<BossHealth>();
-                    if (boss != null) boss.TakeDamage(damage);
-                }
+                BossHealth boss = other.GetComponent<BossHealth>();
+                if (boss != null) boss.TakeDamage(damage);
             }
 
-            // Lógica de penetração acumulável (Dado 5)
-            if (penetrationRemaining > 0)
+            if (penetrationRemaining <= 0)
             {
-                penetrationRemaining--;
+                Destroy(gameObject); 
             }
             else
             {
-                Destroy(gameObject); 
+                // Se tiver o upgrade, consome 1 carga e continua atravessando
+                penetrationRemaining--;
             }
         }
     }

@@ -158,7 +158,7 @@ public void TriggerDiceDraft()
             case 1: 
                 return ("Anticorpos Avançados", "Estimula a produção de proteínas de defesa.\nEfeito: +Velocidade de Ataque (Atira mais rápido)");
             case 2: 
-                return ("Quimioterapia de Impacto", "Bloqueia o crescimento celular desordenado.\nEfeito: +Dano Base e +Dano em Área Crescente");
+                return ("Quimioterapia de Impacto", "Bloqueia o crescimento celular desordenado.\nEfeito: ++Grande Aumento de Dano Base");
             case 3:
                 return ("Propulsão Bio-Cinética", "Efeito: Aumenta a velocidade de viagem de todos os projéteis (Seus e dos Drones) em +30%.");
             case 4: 
@@ -308,12 +308,12 @@ public void TriggerDiceDraft()
             GUI.Box(new Rect(hudX, hudY, hudWidth, hudHeight), "Célula de Defesa", estiloTitulo);
             GUI.Label(new Rect(hudX + 10f, hudY + 30f, hudWidth - 20f, 20f), $"Nível: {currentLevel}  |  XP: {currentXP} / {xpToNextLevel}", estiloTexto);
 
-            PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+            PlayerHealth playerHealth = FindAnyObjectByType<PlayerHealth>();
             string textoVida = "Vidas: 0";
             
             if (playerHealth != null)
             {
-                textoVida = $"Vidas Mecânicas: {playerHealth.totalLives}";
+                textoVida = $"Vidas: {playerHealth.totalLives}";
             }
 
             float vidaWidth = 350f;
@@ -352,21 +352,9 @@ public void TriggerDiceDraft()
                     Debug.Log($"Upgrade aplicado: Tiro Acelerado! Novo Cooldown: {playerCtrl.fireCooldown:F3}s");
                     break;
 
-                case 2: // Quimioterapia de Impacto (+Dano e Dano em Área)
-                    playerCtrl.bulletDamage += 1; // +1 de Dano base
-                    
-                    // Se for a primeira vez pegando, ativa a explosão com um raio inicial
-                    if (playerCtrl.currentExplosionRadius == 0f)
-                    {
-                        playerCtrl.currentExplosionRadius = 1.5f; 
-                    }
-                    else
-                    {
-                        // Nas vezes seguintes, o raio da explosão aumenta!
-                        playerCtrl.currentExplosionRadius += 0.4f; 
-                    }
-
-                    Debug.Log($"Upgrade aplicado: Quimioterapia! Dano base: {playerCtrl.bulletDamage} | Raio do Dano em Área: {playerCtrl.currentExplosionRadius:F1}m");
+                case 2: // Quimioterapia de Impacto (Super Dano Puro)
+                    playerCtrl.bulletDamage += 2;
+                    Debug.Log($"Upgrade aplicado: Quimioterapia! Novo Dano Base: {playerCtrl.bulletDamage}");
                     break;
 
                 case 3: // Propulsão Bio-Cinética (NOVO: Velocidade do Projétil)
